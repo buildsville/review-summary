@@ -17,6 +17,7 @@ type Result = {
     commented: string
     changes_requested: string
     pending: string
+    url: string
 }
 
 async function getReview():Promise<octokit.Response<Reviews[]>> {
@@ -92,7 +93,8 @@ function aggregate(arr: Array<string>):Result {
         approved: approve.toString(),
         commented: comment.toString(),
         changes_requested: requestCanges.toString(),
-        pending: pending.toString()
+        pending: pending.toString(),
+        url: getHtmlUrl()
     }
     return result
 }
@@ -102,6 +104,18 @@ function output(result: Result):void{
     core.setOutput('changes_requested',result.changes_requested)
     core.setOutput('commented',result.commented)
     core.setOutput('pending',result.pending)
+    core.setOutput('url',result.url)
+}
+
+function getHtmlUrl():string {
+    let payload = github.context.payload
+    if ( payload.pull_request == undefined ) {
+        return ""
+    }
+    if (payload.pull_request.html_url == undefined) {
+        return ""
+    }
+    return payload.pull_request.html_url
 }
 
 const reviews:Promise<octokit.Response<Reviews[]>> = getReview()

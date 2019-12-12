@@ -105,7 +105,8 @@ function aggregate(arr) {
         approved: approve.toString(),
         commented: comment.toString(),
         changes_requested: requestCanges.toString(),
-        pending: pending.toString()
+        pending: pending.toString(),
+        url: getHtmlUrl()
     };
     return result;
 }
@@ -114,6 +115,17 @@ function output(result) {
     core.setOutput('changes_requested', result.changes_requested);
     core.setOutput('commented', result.commented);
     core.setOutput('pending', result.pending);
+    core.setOutput('url', result.url);
+}
+function getHtmlUrl() {
+    var payload = github.context.payload;
+    if (payload.pull_request == undefined) {
+        return "";
+    }
+    if (payload.pull_request.html_url == undefined) {
+        return "";
+    }
+    return payload.pull_request.html_url;
 }
 var reviews = getReview();
 reviews.then(function (rev) {
