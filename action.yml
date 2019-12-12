@@ -1,5 +1,8 @@
 name: 'review summary'
 description: 'review summay to output'
+branding:
+  icon: 'users'  
+  color: 'yellow'
 inputs:
   token:
     description: 'secret'
