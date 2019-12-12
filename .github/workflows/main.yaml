@@ -1,0 +1,26 @@
+on:
+  pull_request_review:
+    types:
+      - submitted
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: review
+        uses: ./
+        id: summary
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: print review summary
+        run: |
+          echo "APPROVE: ${{ steps.summary.outputs.approved }}"
+          echo "REQUEST_CHANGES: ${{ steps.summary.outputs.changes_requested }}"
+          echo "COMMENT: ${{ steps.summary.outputs.commented }}"
+          echo "PENDING: ${{ steps.summary.outputs.pending }}"
+      - name: print if approve
+        if: steps.summary.outputs.approved > 0
+        run: |
+          echo "APPROVED!!!"

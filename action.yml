@@ -1,0 +1,19 @@
+name: 'review summary'
+description: 'review summay to output'
+inputs:
+  token:
+    description: 'secret'
+    required: true
+    default: ''
+outputs:
+  approved:
+    description: 'number of approve'
+  commented:
+    description: 'number of comment'
+  changes_requested:
+    description: 'number of change request'
+  pending:
+    description: 'number of pending'
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
