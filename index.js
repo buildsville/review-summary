@@ -127,9 +127,20 @@ function getHtmlUrl() {
     }
     return payload.pull_request.html_url;
 }
+function outputLabels() {
+    var pr = github.context.payload.pull_request;
+    if (pr == undefined) {
+        return;
+    }
+    var labels = pr.labels.map(function (label) { return label.name; });
+    labels.forEach(function (label) {
+        core.setOutput(label, "true");
+    });
+}
 var reviews = getReview();
 reviews.then(function (rev) {
     var sum = summary(rev);
     var agg = aggregate(sum);
     output(agg);
 });
+outputLabels();

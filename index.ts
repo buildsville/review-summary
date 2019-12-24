@@ -118,9 +118,21 @@ function getHtmlUrl():string {
     return payload.pull_request.html_url
 }
 
+function outputLabels() {
+    let pr = github.context.payload.pull_request
+    if ( pr == undefined ) {
+        return
+    }
+    let labels = pr.labels.map(label => label.name)
+    labels.forEach(label => {
+        core.setOutput(label,"true")
+    });
+}
+
 const reviews:Promise<octokit.Response<Reviews[]>> = getReview()
 reviews.then(function(rev){
     const sum = summary(rev)
     const agg = aggregate(sum)
     output(agg)
 })
+outputLabels()
