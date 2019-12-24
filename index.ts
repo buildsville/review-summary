@@ -129,10 +129,10 @@ function outputLabels() {
     });
 }
 
+outputLabels()
 const reviews:Promise<octokit.Response<Reviews[]>> = getReview()
 reviews.then(function(rev){
     const sum = summary(rev)
     const agg = aggregate(sum)
     output(agg)
 })
-outputLabels()

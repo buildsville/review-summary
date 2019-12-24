@@ -6143,13 +6143,13 @@ function outputLabels() {
         core.setOutput(label, "true");
     });
 }
+outputLabels();
 var reviews = getReview();
 reviews.then(function (rev) {
     var sum = summary(rev);
     var agg = aggregate(sum);
     output(agg);
 });
-outputLabels();
 
 
 /***/ }),
