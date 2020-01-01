@@ -20,6 +20,14 @@ type Result = {
     url: string
 }
 
+function getPullRequestOwner():string {
+    let pullRequest = github.context.payload.pull_request 
+    if ( pullRequest == undefined ) {
+        return ""
+    }
+    return pullRequest.user.login
+}
+
 async function getReview():Promise<octokit.Response<Reviews[]>> {
     let payload = github.context.payload
     let pullRequest = payload.pull_request 
@@ -50,11 +58,14 @@ function summary(review: octokit.Response<Reviews[]>):Array<string> {
             submitted_at: Date.parse(d.submitted_at)
         }
     )
+    let summayExceptPrOwner = summary.filter(
+        d => d.user !== PrOwner
+    )
 
     let eachUser = {}
     let states = []
 
-    summary.forEach( s => {
+    summayExceptPrOwner.forEach( s => {
         if (!eachUser[s.user]) {
             eachUser[s.user] = {
                 state: s.state,
@@ -130,6 +141,7 @@ function outputLabels() {
 }
 
 outputLabels()
+const PrOwner = getPullRequestOwner();
 const reviews:Promise<octokit.Response<Reviews[]>> = getReview()
 reviews.then(function(rev){
     const sum = summary(rev)

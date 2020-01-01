@@ -38,6 +38,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 var core = require("@actions/core");
 var github = require("@actions/github");
+function getPullRequestOwner() {
+    var pullRequest = github.context.payload.pull_request;
+    if (pullRequest == undefined) {
+        return "";
+    }
+    return pullRequest.user.login;
+}
 function getReview() {
     return __awaiter(this, void 0, void 0, function () {
         var payload, pullRequest, repository, owner, pullNumber, repo, client, result;
@@ -73,9 +80,10 @@ function summary(review) {
         user: d.user.login,
         submitted_at: Date.parse(d.submitted_at)
     }); });
+    var summayExceptPrOwner = summary.filter(function (d) { return d.user !== PrOwner; });
     var eachUser = {};
     var states = [];
-    summary.forEach(function (s) {
+    summayExceptPrOwner.forEach(function (s) {
         if (!eachUser[s.user]) {
             eachUser[s.user] = {
                 state: s.state,
@@ -138,6 +146,7 @@ function outputLabels() {
     });
 }
 outputLabels();
+var PrOwner = getPullRequestOwner();
 var reviews = getReview();
 reviews.then(function (rev) {
     var sum = summary(rev);
