@@ -1,10 +1,5 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import * as octokit from '@octokit/rest'
-
-type Reviews = octokit.PullsListReviewsResponseItem & {
-    submitted_at: string
-}
 
 type Status = {
     state: string
@@ -28,7 +23,7 @@ function getPullRequestOwner():string {
     return pullRequest.user.login
 }
 
-async function getReview():Promise<octokit.Response<Reviews[]>> {
+async function getReview() {
     let payload = github.context.payload
     let pullRequest = payload.pull_request 
     let repository = payload.repository
@@ -38,18 +33,18 @@ async function getReview():Promise<octokit.Response<Reviews[]>> {
     let owner = repository.owner.login
     let pullNumber = pullRequest.number
     let repo = repository.name
-    let client = new github.GitHub(core.getInput('token'))
-    let result = await client.pulls.listReviews({
+    let client = github.getOctokit(core.getInput('token'))
+    let result = await client.rest.pulls.listReviews({
         owner: owner,
         pull_number: pullNumber,
         repo: repo
     }).catch(
         e => core.setFailed(e.message)
-    ) as octokit.Response<Reviews[]>
+    )
     return result
 }
 
-function summary(review: octokit.Response<Reviews[]>):Array<string> {
+function summary(review: any):Array<string> {
     let data = review.data
     let summary = data.map(
         d => <Status>{
@@ -63,7 +58,7 @@ function summary(review: octokit.Response<Reviews[]>):Array<string> {
     )
 
     let eachUser = {}
-    let states = []
+    let states = Array()
 
     summayExceptPrOwner.forEach( s => {
         if (!eachUser[s.user]) {
@@ -142,7 +137,7 @@ function outputLabels() {
 
 outputLabels()
 const PrOwner = getPullRequestOwner();
-const reviews:Promise<octokit.Response<Reviews[]>> = getReview()
+const reviews = getReview()
 reviews.then(function(rev){
     const sum = summary(rev)
     const agg = aggregate(sum)

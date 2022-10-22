@@ -60,8 +60,8 @@ function getReview() {
                     owner = repository.owner.login;
                     pullNumber = pullRequest.number;
                     repo = repository.name;
-                    client = new github.GitHub(core.getInput('token'));
-                    return [4 /*yield*/, client.pulls.listReviews({
+                    client = github.getOctokit(core.getInput('token'));
+                    return [4 /*yield*/, client.rest.pulls.listReviews({
                             owner: owner,
                             pull_number: pullNumber,
                             repo: repo
@@ -82,7 +82,7 @@ function summary(review) {
     }); });
     var summayExceptPrOwner = summary.filter(function (d) { return d.user !== PrOwner; });
     var eachUser = {};
-    var states = [];
+    var states = Array();
     summayExceptPrOwner.forEach(function (s) {
         if (!eachUser[s.user]) {
             eachUser[s.user] = {
