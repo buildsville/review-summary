@@ -149,6 +149,8 @@ outputLabels();
 var PrOwner = getPullRequestOwner();
 var reviews = getReview();
 reviews.then(function (rev) {
+    if (rev == undefined)
+        return;
     var sum = summary(rev);
     var agg = aggregate(sum);
     output(agg);

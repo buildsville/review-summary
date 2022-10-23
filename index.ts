@@ -139,6 +139,7 @@ outputLabels()
 const PrOwner = getPullRequestOwner();
 const reviews = getReview()
 reviews.then(function(rev){
+    if ( rev == undefined ) return;
     const sum = summary(rev)
     const agg = aggregate(sum)
     output(agg)
